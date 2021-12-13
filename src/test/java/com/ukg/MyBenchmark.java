@@ -23,7 +23,7 @@ public class MyBenchmark {
         random.nextBytes(plainText);
     }
 
-    @State(Scope.Benchmark)
+    @State(Scope.Thread)
     public static class AESGCM256 {
         SecureRandom secureRandom = new SecureRandom();
         private Cipher cipher;
@@ -48,26 +48,27 @@ public class MyBenchmark {
         @Benchmark
         @BenchmarkMode(Mode.Throughput)
         @Fork(1)
-        @Warmup(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
-        @Measurement(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
+        @Threads(1)
+        @Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+        @Measurement(iterations = 10, time = 5, timeUnit = TimeUnit.SECONDS)
         public void encrypt(Blackhole blackhole) throws IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException {
             iv[0]++;
             GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); //128 bit auth tag length
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
 
             byte[] cipherText = cipher.doFinal(plainText);
-            blackhole.consume(cipherText);
+            //blackhole.consume(cipherText);
 
-            //ByteBuffer byteBuffer = ByteBuffer.allocate(iv.length + cipherText.length);
-            //byteBuffer.put(iv);
-            //byteBuffer.put(cipherText);
-            //byte[] cipherMessage = byteBuffer.array();
+            ByteBuffer byteBuffer = ByteBuffer.allocate(iv.length + cipherText.length);
+            byteBuffer.put(iv);
+            byteBuffer.put(cipherText);
+            byte[] cipherMessage = byteBuffer.array();
 
-            //blackhole.consume(cipherMessage);
+            blackhole.consume(cipherMessage);
         }
     }
 
-    @State(Scope.Benchmark)
+    @State(Scope.Thread)
     public static class HMAC256 {
         SecureRandom secureRandom = new SecureRandom();
         private Mac mac;
@@ -87,8 +88,9 @@ public class MyBenchmark {
         @Benchmark
         @BenchmarkMode(Mode.Throughput)
         @Fork(1)
-        @Warmup(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
-        @Measurement(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
+        @Threads(1)
+        @Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+        @Measurement(iterations = 10, time = 5, timeUnit = TimeUnit.SECONDS)
         public void hash(Blackhole blackhole) {
             byte[] finalHash = mac.doFinal(plainText);
 

@@ -46,8 +46,7 @@ public class MyBenchmark {
         }
 
         @Benchmark
-        @BenchmarkMode(Mode.SampleTime)
-        @OutputTimeUnit(TimeUnit.NANOSECONDS)
+        @BenchmarkMode(Mode.Throughput)
         @Fork(1)
         @Warmup(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
         @Measurement(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
@@ -86,8 +85,7 @@ public class MyBenchmark {
         }
 
         @Benchmark
-        @BenchmarkMode(Mode.SampleTime)
-        @OutputTimeUnit(TimeUnit.NANOSECONDS)
+        @BenchmarkMode(Mode.Throughput)
         @Fork(1)
         @Warmup(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
         @Measurement(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
